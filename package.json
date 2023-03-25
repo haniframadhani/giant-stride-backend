@@ -1,0 +1,16 @@
+{
+  "name": "kel-7-jointscamp-backend",
+  "version": "0.1.0",
+  "description": "",
+  "main": "App.js",
+  "scripts": {
+    "start": "nodemon App.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.0.3"
+  }
+}
