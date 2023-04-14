@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Blog = mongoose.model('Blog', {
+const blogSchema = new mongoose.Schema({
   image: {
     type: String,
     require: true
@@ -12,6 +12,12 @@ const Blog = mongoose.model('Blog', {
     type: String,
     require: true
   }
+}, {
+  timestamps: {
+    createdAt: 'uploadDate',
+    updatedAt: false
+  }
 })
+const Blog = mongoose.model('Blog', blogSchema, 'blogs')
 
 module.exports = Blog
