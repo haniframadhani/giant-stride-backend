@@ -27,13 +27,13 @@ app.get('/api/article', async (req, res) => {
   const id = req.query.id;
   if (id) {
     try {
-      const articles = await Blog.findOne({
+      const article = await Blog.findOne({
         _id: id
       })
       return res.status(200).json({
         status: 200,
         message: 'succeed get article data',
-        articles
+        article
       })
     } catch (error) {
       return res.status(500).json({
@@ -44,7 +44,9 @@ app.get('/api/article', async (req, res) => {
     }
   }
   try {
-    const articles = await Blog.find()
+    const articles = await Blog.find().sort({
+      "uploadDate": -1
+    })
     return res.status(200).json({
       status: 200,
       message: 'succeed get article data',
