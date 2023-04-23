@@ -20,7 +20,45 @@ app.use(bodyParser.json())
 const upload = multer({ storage });
 
 app.get('/', (req, res) => {
-  res.send('Giant Spot')
+  res.send('Giant Stride')
+})
+
+app.get('/api/article', async (req, res) => {
+  const id = req.query.id;
+  if (id) {
+    try {
+      const article = await Blog.findOne({
+        _id: id
+      })
+      return res.status(200).json({
+        status: 200,
+        message: 'succeed get article data',
+        article
+      })
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: 'Failed to get article data',
+        error
+      })
+    }
+  }
+  try {
+    const articles = await Blog.find().sort({
+      "uploadDate": -1
+    })
+    return res.status(200).json({
+      status: 200,
+      message: 'succeed get article data',
+      articles
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: 500,
+      message: 'Failed to get article data',
+      error
+    })
+  }
 })
 
 app.post("/api/article", upload.single('image'), (req, res) => {
