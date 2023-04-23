@@ -23,12 +23,10 @@ app.get('/', (req, res) => {
   res.send('Giant Spot')
 })
 
-app.post("/api/upload", upload.single('photo'), (req, res) => {
-  let finalImageURL = req.protocol + "://" + req.get("host") + "/uploads/" + req.file.filename;
-  res.json({ status: "success", image: finalImageURL })
-})
-
-app.post("/api/article", (req, res) => {
+app.post("/api/article", upload.single('image'), (req, res) => {
+  let finalImageURL = req.protocol + "://" + req.get("host") + "/img/" + req.file.filename;
+  req.body.image = finalImageURL;
+  console.log(req.body)
   if (!Object.keys(req.body).length) {
     return res.status(400).json({
       status: 400,
@@ -63,12 +61,31 @@ app.post("/api/article", (req, res) => {
       message: 'Successfully uploaded article',
     })
   } catch (error) {
-    console.log(error)
     return res.status(500).json({
       status: 500,
       message: 'Failed to upload article',
       error
     })
+  }
+  return res.status(201).json({
+    status: 201,
+    message: "success upload article"
+  })
+})
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    res.status(400).json({
+      status: 400,
+      message: 'Error uploading image'
+    });
+  } else if (err) {
+    res.status(500).json({
+      status: 500,
+      message: 'Internal server error'
+    });
+  } else {
+    next();
   }
 })
 
