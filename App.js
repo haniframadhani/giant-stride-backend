@@ -105,10 +105,6 @@ app.post("/api/article", upload.single('image'), (req, res) => {
       error
     })
   }
-  return res.status(201).json({
-    status: 201,
-    message: "success upload article"
-  })
 })
 
 app.use((err, req, res, next) => {
