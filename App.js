@@ -131,8 +131,8 @@ app.delete("/api/article", async (req, res) => {
     unlink(`public/${img}`, err => {
       if (err) throw err;
     })
-    return res.status(200).json({
-      status: 200,
+    return res.status(204).json({
+      status: 204,
       message: 'success delete article'
     })
   } catch (error) {
@@ -141,6 +141,78 @@ app.delete("/api/article", async (req, res) => {
       message: 'internal server error',
     })
   }
+})
+
+app.patch("/api/article", async (req, res) => {
+  if (!Object.keys(req.body).length) {
+    return res.status(400).json({
+      status: 400,
+      message: "no data send",
+    });
+  }
+  const id = req.query.id;
+  let oldArticle = null;
+  try {
+    oldArticle = await Blog.findOne({ _id: id });
+    if (oldArticle === null) {
+      return res.status(404).json({
+        status: 404,
+        message: 'article not found',
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 500,
+      message: 'internal server error',
+    })
+  }
+  const { title, body } = req.body;
+
+  // jika data baru sama dengan data lama
+  if (title === oldArticle.title && body === oldArticle.body) {
+    return res.status(304).send()
+  }
+
+  // ubah data jika data baru tidak sama dengan data lama
+  if (title != oldArticle.title && body != oldArticle.body) {
+    try {
+      const article = await Blog.updateOne({ _id: id }, {
+        title,
+        body
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: 'internal server error',
+      })
+    }
+  } else if (title != oldArticle.title) {
+    try {
+      const article = await Blog.updateOne({ _id: id }, {
+        title
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: 'internal server error',
+      })
+    }
+  } else if (body != oldArticle.body) {
+    try {
+      const article = await Blog.updateOne({ _id: id }, {
+        body
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: 'internal server error',
+      })
+    }
+  }
+  return res.status(200).json({
+    status: 200,
+    message: 'article updated'
+  })
 })
 
 app.use((err, req, res, next) => {
