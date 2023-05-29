@@ -168,41 +168,30 @@ app.patch("/api/article", async (req, res) => {
   }
   const { title, body } = req.body;
 
-  // jika data baru sama dengan data lama
-  if (title === oldArticle.title && body === oldArticle.body) {
+  // jika data baru sama dengan data lama atau data yang dikirim kosong
+  if (title === oldArticle.title && body === oldArticle.body || title == '' && body == '') {
     return res.status(304).send()
   }
 
   // ubah data jika data baru tidak sama dengan data lama
   if (title != oldArticle.title && body != oldArticle.body) {
     try {
-      const article = await Blog.updateOne({ _id: id }, {
-        title,
-        body
-      });
-    } catch (error) {
-      return res.status(500).json({
-        status: 500,
-        message: 'internal server error',
-      })
+      if (title != '' && body != '') {
+        const article = await Blog.updateOne({ _id: id }, {
+          title,
+          body
+        });
+      } else if (title != '' && body == '') {
+        const article = await Blog.updateOne({ _id: id }, {
+          title
+        });
+      } else if (title == '' && body != '') {
+        const article = await Blog.updateOne({ _id: id }, {
+          body
+        });
+      }
     }
-  } else if (title != oldArticle.title) {
-    try {
-      const article = await Blog.updateOne({ _id: id }, {
-        title
-      });
-    } catch (error) {
-      return res.status(500).json({
-        status: 500,
-        message: 'internal server error',
-      })
-    }
-  } else if (body != oldArticle.body) {
-    try {
-      const article = await Blog.updateOne({ _id: id }, {
-        body
-      });
-    } catch (error) {
+    catch (error) {
       return res.status(500).json({
         status: 500,
         message: 'internal server error',
