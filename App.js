@@ -173,30 +173,19 @@ app.patch("/api/article", async (req, res) => {
     return res.status(304).send()
   }
 
-  // ubah data jika data baru tidak sama dengan data lama
-  if (title != oldArticle.title && body != oldArticle.body) {
-    try {
-      if (title != '' && body != '') {
-        const article = await Blog.updateOne({ _id: id }, {
-          title,
-          body
-        });
-      } else if (title != '' && body == '') {
-        const article = await Blog.updateOne({ _id: id }, {
-          title
-        });
-      } else if (title == '' && body != '') {
-        const article = await Blog.updateOne({ _id: id }, {
-          body
-        });
+  try {
+    await Blog.updateOne({ _id: id }, {
+      $set: {
+        ...(title && { title }),
+        ...(body && { body })
       }
-    }
-    catch (error) {
-      return res.status(500).json({
-        status: 500,
-        message: 'internal server error',
-      })
-    }
+    });
+  }
+  catch (error) {
+    return res.status(500).json({
+      status: 500,
+      message: 'internal server error',
+    })
   }
   return res.status(200).json({
     status: 200,
