@@ -1,13 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
 const cors = require('cors');
 const path = require('path');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 require("dotenv").config();
 
 require('./utils/db');
 const storage = require('./model/storage');
 const Blog = require('./model/blog');
+const User = require('./model/user');
 const { unlink } = require('fs');
 
 const app = express();
@@ -17,6 +21,14 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")))
 app.use(bodyParser.json())
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24
+  }
+}))
 
 const upload = multer({ storage });
 
@@ -63,6 +75,13 @@ app.get('/api/article', async (req, res) => {
 })
 
 app.post("/api/article", upload.single('image'), async (req, res) => {
+  console.log(req.session.user)
+  if (!req.session.user) {
+    return res.status(401).json({
+      status: 401,
+      message: 'unauthorized',
+    })
+  }
   let finalImageURL = req.protocol + "://" + req.get("host") + "/img/" + req.file.filename;
   req.body.image = finalImageURL;
   if (!Object.keys(req.body).length) {
@@ -108,6 +127,13 @@ app.post("/api/article", upload.single('image'), async (req, res) => {
 })
 
 app.delete("/api/article", async (req, res) => {
+  console.log(req.session.user)
+  if (!req.session.user) {
+    return res.status(401).json({
+      status: 401,
+      message: 'unauthorized',
+    })
+  }
   const id = req.query.id;
   let img = null;
   try {
@@ -144,6 +170,13 @@ app.delete("/api/article", async (req, res) => {
 })
 
 app.patch("/api/article", async (req, res) => {
+  console.log(req.session.user)
+  if (!req.session.user) {
+    return res.status(401).json({
+      status: 401,
+      message: 'unauthorized',
+    })
+  }
   if (!Object.keys(req.body).length) {
     return res.status(400).json({
       status: 400,
@@ -190,6 +223,47 @@ app.patch("/api/article", async (req, res) => {
   return res.status(200).json({
     status: 200,
     message: 'article updated'
+  })
+})
+
+app.post("/api/auth/login", async (req, res) => {
+  const { userName, password } = req.body;
+  if (!userName || !password) {
+    return res.status(400).json({
+      status: 400,
+      message: 'username and password are required'
+    })
+  }
+  let user;
+  try {
+    user = await User.findOne({
+      userName: userName
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: 500,
+      message: 'internal server error'
+    })
+  }
+  if (!user) {
+    return res.status(401).json({
+      status: 401,
+      message: 'username or password are incorrect'
+    })
+  }
+  bcrypt.compare(password, user.password, function (err, result) {
+    if (result) {
+      req.session.user = { userName };
+      return res.status(200).json({
+        status: 200,
+        message: 'success'
+      })
+    } else {
+      return res.status(401).json({
+        status: 401,
+        message: 'username or password are incorrect'
+      })
+    }
   })
 })
 
