@@ -20,18 +20,14 @@ const port = process.env.PORT || 4000;
 
 app.use(cookieParser())
 app.use(cors({
-  origin: "http://localhost:3000",
   credentials: true,
+  origin: "http://localhost:3000",
 }))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")))
 app.use(bodyParser.json())
 
 const upload = multer({ storage });
-
-app.get('/', (req, res) => {
-  res.send('Giant Stride')
-})
 
 app.get('/api/article', async (req, res) => {
   const id = req.query.id;
@@ -189,8 +185,7 @@ app.patch("/api/article", VerifyToken, async (req, res) => {
         ...(body && { body })
       }
     });
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({
       status: 500,
       message: 'internal server error',
@@ -199,23 +194,6 @@ app.patch("/api/article", VerifyToken, async (req, res) => {
   return res.status(200).json({
     status: 200,
     message: 'article updated'
-  })
-})
-
-app.get("/api/auth/crypt", async (req, res) => {
-  const saltRound = 10;
-  const plainText = "test123";
-  bcrypt.hash(plainText, saltRound, function (err, hash) {
-    // console.log(hash);
-    User.insertMany({
-      name: "test123",
-      email: "test123@test.com",
-      password: hash
-    })
-    return res.status(200).json({
-      status: 200,
-      message: 'success'
-    })
   })
 })
 
@@ -313,6 +291,34 @@ app.get("/api/auth/token", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+})
+
+app.post('/api/auth/logout', async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    return res.status(204).json({
+      status: 204,
+      message: 'no content'
+    })
+  }
+  const user = await User.findOne({ refresh_token: refreshToken })
+  if (!user) {
+    return res.status(204).json({
+      status: 204,
+      message: 'no content'
+    })
+  }
+  const userId = user._id.toString();
+  await User.updateOne({ _id: userId }, {
+    $set: {
+      refresh_token: null
+    }
+  });
+  res.clearCookie('refreshToken');
+  return res.status(200).json({
+    status: 200,
+    message: 'success logout'
+  })
 })
 
 app.use((err, req, res, next) => {
