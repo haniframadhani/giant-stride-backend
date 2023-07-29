@@ -244,7 +244,7 @@ app.post("/api/auth/login", async (req, res) => {
     }
   })
   res.cookie('refreshToken', refreshToken, {
-    httpsOnly: true,
+    httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
   })
   return res.status(200).json({
