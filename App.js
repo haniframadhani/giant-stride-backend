@@ -21,7 +21,7 @@ const port = process.env.PORT || 4000;
 app.use(cookieParser())
 app.use(cors({
   credentials: true,
-  origin: "http://localhost:3000",
+  origin: `${process.env.ALLOW_ORIGIN}`,
 }))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")))
@@ -197,7 +197,7 @@ app.patch("/api/article", VerifyToken, async (req, res) => {
   })
 })
 
-app.post("/api/auth/login", async (req, res) => {
+app.post("/api/auth", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({
@@ -254,7 +254,7 @@ app.post("/api/auth/login", async (req, res) => {
   })
 })
 
-app.get("/api/auth/token", async (req, res) => {
+app.get("/api/auth", async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
@@ -293,7 +293,7 @@ app.get("/api/auth/token", async (req, res) => {
   }
 })
 
-app.post('/api/auth/logout', async (req, res) => {
+app.delete('/api/auth', async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
     return res.status(204).json({
@@ -303,9 +303,9 @@ app.post('/api/auth/logout', async (req, res) => {
   }
   const user = await User.findOne({ refresh_token: refreshToken })
   if (!user) {
-    return res.status(204).json({
-      status: 204,
-      message: 'no content'
+    return res.status(404).json({
+      status: 404,
+      message: 'user not found'
     })
   }
   const userId = user._id.toString();
@@ -315,9 +315,9 @@ app.post('/api/auth/logout', async (req, res) => {
     }
   });
   res.clearCookie('refreshToken');
-  return res.status(200).json({
-    status: 200,
-    message: 'success logout'
+  return res.status(204).json({
+    status: 204,
+    message: 'success delete article'
   })
 })
 
