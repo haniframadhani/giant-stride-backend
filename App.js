@@ -243,9 +243,11 @@ app.post("/api/auth", async (req, res) => {
       refresh_token: refreshToken
     }
   })
+  const isSecure = `${process.env.SECURE_COOKIE}` === 'true'
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
+    secure: isSecure
   })
   return res.status(200).json({
     status: 200,
@@ -338,5 +340,5 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(port, () => {
-  console.log(`running on http://localhost:${port}/`)
+  console.log(`running on port ${port}`)
 })
