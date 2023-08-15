@@ -7,4 +7,4 @@ const connectionParams = {
 }
 mongoose.connect(dburl, connectionParams)
   .then(() => console.log('connected to database'))
-  .catch(err => console.log(`error connecting to database\n${err}`));
+  .catch(err => console.log(`failed connecting to database\n${err}`));
