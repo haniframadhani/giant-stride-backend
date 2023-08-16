@@ -1,15 +1,16 @@
 {
   "version": 2,
+  "name": "giant-stride-backend",
   "builds": [
     {
-      "src": "./App.js",
+      "src": "App.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/"
+      "dest": "/index.js"
     }
   ]
 }
