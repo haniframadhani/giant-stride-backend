@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
 require("dotenv").config();
 
-require('./utils/db');
+const connectDb = require('./utils/db');
 const storage = require('./model/storage');
 const Blog = require('./model/blog');
 const User = require('./model/user');
@@ -28,6 +28,10 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use(bodyParser.json())
 
 const upload = multer({ storage });
+
+app.get('/', (req, res) => {
+  res.send('giant stride is online! ready to go')
+})
 
 app.get('/api/article', async (req, res) => {
   const id = req.query.id;
@@ -62,7 +66,6 @@ app.get('/api/article', async (req, res) => {
     return res.status(500).json({
       status: 500,
       message: 'Failed to get article data',
-      error
     })
   }
 })
@@ -107,7 +110,6 @@ app.post("/api/article", upload.single('image'), VerifyToken, async (req, res) =
     return res.status(500).json({
       status: 500,
       message: 'Failed to upload article',
-      error
     })
   }
 })
@@ -339,6 +341,8 @@ app.use((err, req, res, next) => {
   }
 })
 
-app.listen(port, () => {
-  console.log(`running on port ${port}`)
+connectDb().then(() => {
+  app.listen(port, () => {
+    console.log(`running on port ${port}`)
+  })
 })
