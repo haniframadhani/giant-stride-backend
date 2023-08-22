@@ -24,7 +24,6 @@ Install giant-stride-backend with npm
 
 ```bash
   npm install 
-  cd my-project
 ```
     
 ## Run Locally
