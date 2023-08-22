@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 require("dotenv").config();
-const dburl = process.env.DATABASE_URL_CLOUD;
+const dburl = process.env.DATABASE_URL;
 const connectionParams = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
