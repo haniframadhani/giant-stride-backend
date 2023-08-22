@@ -25,31 +25,19 @@ Install giant-stride-backend with npm
 ```bash
   npm install 
 ```
-    
-## Run Locally
 
-Clone the project
+Install nodemon globally
 
 ```bash
-  git clone https://github.com/haniframadhani/giant-stride-backend.git
+  npm install -g nodemon
 ```
+    
+## Run Locally
 
 Go to the project directory
 
 ```bash
   cd giant-stride-backend
-```
-
-Install dependencies
-
-```bash
-  npm install
-```
-
-Install nodemon globally
-
-```bash
-npm install -g nodemon
 ```
 
 Start the development server
