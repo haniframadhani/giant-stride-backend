@@ -52,7 +52,6 @@ Start the non-development server
   npm run start
 ```
 
-
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
@@ -65,9 +64,13 @@ To run this project, you will need to add the following environment variables to
 
 `ALLOW_ORIGIN` your frontend url E.g http://localhost:3000
 
-`DATABASE_URL` your database url E.g mongodb://127.0.0.1:27017/mydatabase
+`DATABASE_URL` your mongodb database url E.g mongodb://127.0.0.1:27017/mydatabase
 
 `SECURE_COOKIE` not required in development. must set to `false` for development don't leave empty, leave empty will set `true` by default.
+
+## Data example
+
+you can add the data example by importing `blogs.json` & `users.json` into your mongodb database.
 
 ## FAQ
 

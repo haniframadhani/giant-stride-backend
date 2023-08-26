@@ -32,4 +32,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-/public/img
+# /public/img
+*.jpg
+*.png

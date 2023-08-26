@@ -1,0 +1,12 @@
+[
+  {
+    "_id": {
+      "$oid": "64e933573d19a9debe86fd80"
+    },
+    "name": "owner123",
+    "email": "owner123@owner.com",
+    "password": "$2b$10$EXSL59ZXCVjEWwknHX6qFuEg0VbU55liQB6sCu50OOnudtY.UZ3li",
+    "__v": 0,
+    "refresh_token": ""
+  }
+]
